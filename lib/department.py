@@ -1,6 +1,7 @@
 from __init__ import CURSOR, CONN
 
 
+
 class Department:
 
     def __init__(self, name, location, id=None):
@@ -72,3 +73,42 @@ class Department:
 
         CURSOR.execute(sql, (self.id,))
         CONN.commit()
+        self.id = None
+
+    @classmethod
+    def instance_from_db(cls, row):
+        """Create a Department instance from a database row"""
+        return cls(id=row[0], name=row[1], location=row[2])
+
+    
+    @classmethod
+    def get_all(cls):
+        sql = "SELECT * FROM departments"
+        rows = CURSOR.execute(sql).fetchall()
+        return [cls.instance_from_db(row) for row in rows]
+
+    
+    @classmethod
+    def find_by_id(cls, id):
+        sql = "SELECT * FROM departments WHERE id = ?"
+        row = CURSOR.execute(sql, (id,)).fetchone()
+        if row:
+            return cls.instance_from_db(row)
+        return None
+
+    @classmethod
+    def find_by_name(cls, name):
+        sql = "SELECT * FROM departments WHERE name = ?"
+        row = CURSOR.execute(sql, (name,)).fetchone()
+        if row:
+            return cls.instance_from_db(row)
+        return None
+    
+    @classmethod
+    def find_by_location(cls, location):
+        sql = "SELECT * FROM departments WHERE location = ?"
+        row = CURSOR.execute(sql, (location,)).fetchone()
+        if row:
+            return cls.instance_from_db(row)
+        return None
+    
